@@ -1,15 +1,7 @@
 import pandas as pd
 import numpy as np
-import tensorflow as tf
-import matplotlib.pyplot as plt
 import yfinance as yf
-from sklearn.metrics import mean_absolute_percentage_error
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras import layers
-import time
-import timeit
+import tensorflow as tf
 
 
 class ETL:
@@ -101,3 +93,9 @@ class ETL:
                 # move along one time step
                 in_start += 1
         return np.array(X), np.array(y)
+
+
+# data = ETL('AAPL')
+# print(data.train)
+model = tf.keras.models.Sequential()
+print(model)
