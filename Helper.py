@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import tensorflow as tf
+from sklearn.metrics import mean_absolute_percentage_error
+import matplotlib.pyplot as plt
 
 
 class ETL:
@@ -95,7 +97,130 @@ class ETL:
         return np.array(X), np.array(y)
 
 
-# data = ETL('AAPL')
-# print(data.train)
-model = tf.keras.models.Sequential()
-print(model)
+class PredictAndForecast:
+    """
+    model: tf.keras.Model
+    train: np.array
+    test: np.array
+    Takes a trained model, train, and test datasets and returns predictions
+    of len(test) with same shape.
+    """
+
+    def __init__(self, model, train, test, n_input=5) -> None:
+        self.model = model
+        self.train = train
+        self.test = test
+        self.n_input = n_input
+        self.predictions = self.get_predictions()
+
+    def forcast(self, history) -> np.array:
+        """
+        Given last weeks actual data, forecasts next weeks' prices.
+        """
+        # Flatten data
+        data = np.array(history)
+        data = data.reshape((data.shape[0] * data.shape[1], data.shape[2]))
+
+        # retrieve last observations for input data
+        x_input = data[-self.n_input:, :]
+        x_input = x_input.reshape((1, len(x_input), 1))
+
+        # forecast the next week
+        yhat = self.model.predict(x_input, verbose=0)
+
+        # we only want the vector forecast
+        yhat = yhat[0]
+        return yhat
+
+    def get_predictions(self) -> np.array:
+        """
+        compiles models predictions week by week over entire test set.
+        """
+        # history is a list of weekly data
+        # history = [x for x in self.train]
+        history = []
+
+        # walk-forward validation over each week
+        predictions = []
+        for i in range(len(self.test)):
+            # get real observation and add to history for predicting the next week
+            history.append(self.test[i, :])
+
+            yhat_sequence = self.forcast(history)
+
+            # store the predictions
+            predictions.append(yhat_sequence)
+
+        return np.array(predictions)
+
+
+class Evaluate:
+    def __init__(self, actual, predictions) -> None:
+        self.actual = actual
+        self.predictions = predictions
+        self.var_ratio = self.compare_var()
+        self.mape = self.evaluate_model_with_mape()
+
+    def compare_var(self) -> float:
+        """
+        Calculates the variance ratio of the predictions
+        """
+        return abs(1 - (np.var(self.predictions)) / np.var(self.actual))
+
+    def evaluate_model_with_mape(self) -> float:
+        """
+        Calculates the mean absolute percentage error
+        """
+        return mean_absolute_percentage_error(self.actual.flatten(), self.predictions.flatten())
+
+
+def plot_metrics(history, epochs: int = 25):
+    acc = history.history['mape']
+    val_acc = history.history['val_mape']
+
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+
+    epochs_range = range(epochs)
+
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, acc, label='Training MAPE')
+    plt.plot(epochs_range, val_acc, label='Validation MAPE')
+    plt.legend(loc='lower right')
+    plt.title('Training and Validation MAPE')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, loss, label='Training Loss')
+    plt.plot(epochs_range, val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.title('Training and Validation Loss')
+    plt.show()
+
+
+def plot_results(test, preds, df, title_suffix=None, xlabel='AAPL stock Price'):
+    """
+    Plots training data in blue, actual values in red, and predictions in green, over time.
+    """
+    fig, ax = plt.subplots(figsize=(18, 6))
+    # x = df.Close[-498:].index
+    plot_test = test[0:]
+    plot_preds = preds[0:]
+
+    x = df[-(plot_test.shape[0] * plot_test.shape[1]):].index
+    plot_test = plot_test.reshape((plot_test.shape[0] * plot_test.shape[1], 1))
+    plot_preds = plot_preds.reshape((plot_test.shape[0] * plot_test.shape[1], 1))
+
+    ax.plot(x, plot_test, label='actual')
+    ax.plot(x, plot_preds, label='preds')
+
+    if title_suffix is None:
+        ax.set_title('Predictions vs. Actual')
+    else:
+        ax.set_title(f'Predictions vs. Actual, {title_suffix}')
+
+    ax.set_xlabel('Date')
+    ax.set_ylabel(xlabel)
+    ax.legend()
+
+    plt.show()

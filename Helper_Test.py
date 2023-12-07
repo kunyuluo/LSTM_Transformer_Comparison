@@ -42,6 +42,7 @@ test = np.array(np.array_split(test, sample_test))
 
 train = train.reshape((sample_train, timestep, num_features))
 test = test.reshape((sample_test, timestep, num_features))
+# print(train)
 # print(train.shape)
 
 # Construct dataset: x_train, y_train, x_test, y_test
@@ -77,10 +78,13 @@ def to_supervised(train, n_out=5) -> tuple:
 x_train, y_train = to_supervised(train)
 x_test, y_test = to_supervised(test)
 
-data_check = np.array(train)
-data_check = data_check.reshape(data_check.shape[0] * data_check.shape[1], data_check.shape[2])
-x_input = data_check[-5:, :]
+# data_check = np.array(train)
+# data_check = data_check.reshape(data_check.shape[0] * data_check.shape[1], data_check.shape[2])
+# x_input = data_check[-5:, :]
 # x_input = x_input.reshape((1, len(x_input), 1))
-# print(x_input.shape)
-week_data = [x for x in train]
-print(week_data)
+#
+# week_data = [x for x in train]
+# print(week_data)
+
+print(x_train)
+print(y_train)
