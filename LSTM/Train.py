@@ -8,7 +8,7 @@ data = ETL('AAPL')
 
 # Build the model
 # *************************************************************************
-model_index = 1
+model_index = 2
 
 if model_index == 1:
     baseline = build_lstm_1(data)
@@ -20,11 +20,11 @@ else:
 model = baseline[0]
 history = baseline[1]
 
+# Save models
+# *************************************************************************
+with open('models/model_lstm_{}.pkl'.format(model_index), 'wb') as f:
+    pickle.dump(model, f)
+
 # Check metrics
 # *************************************************************************
 plot_metrics(history)
-
-# Save models
-# *************************************************************************
-with open('model_lstm_{}.pkl'.format(model_index), 'wb') as f:
-    pickle.dump(model, f)

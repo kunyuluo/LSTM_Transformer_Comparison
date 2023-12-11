@@ -106,9 +106,8 @@ class PredictAndForecast:
     of len(test) with same shape.
     """
 
-    def __init__(self, model, train, test, n_input=5) -> None:
+    def __init__(self, model, test, n_input=5) -> None:
         self.model = model
-        self.train = train
         self.test = test
         self.n_input = n_input
         self.predictions = self.get_predictions()
@@ -188,12 +187,14 @@ def plot_metrics(history, epochs: int = 25):
     plt.plot(epochs_range, acc, label='Training MAPE')
     plt.plot(epochs_range, val_acc, label='Validation MAPE')
     plt.legend(loc='lower right')
+    plt.ylim(0, 50)
     plt.title('Training and Validation MAPE')
 
     plt.subplot(1, 2, 2)
     plt.plot(epochs_range, loss, label='Training Loss')
     plt.plot(epochs_range, val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
+    plt.ylim(0, 100)
     plt.title('Training and Validation Loss')
     plt.show()
 
