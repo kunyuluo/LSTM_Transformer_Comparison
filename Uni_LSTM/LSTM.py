@@ -12,7 +12,7 @@ from Helper import ETL
 
 def build_lstm_1(etl: ETL, epochs=25, batch_size=32):
     """
-      Builds, compiles, and fits our LSTM baseline model.
+      Builds, compiles, and fits our Uni_LSTM baseline model.
     """
     n_timesteps, n_features, n_outputs = 5, 1, 5
     callbacks = [tf.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)]
@@ -34,7 +34,7 @@ def build_lstm_1(etl: ETL, epochs=25, batch_size=32):
 
 def build_lstm_2(etl: ETL, epochs=25, batch_size=32):
     """
-    Builds, compiles, and fits our LSTM baseline model.
+    Builds, compiles, and fits our Uni_LSTM baseline model.
     """
     n_timesteps, n_features, n_outputs = 5, 1, 5
     callbacks = [tf.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)]
@@ -42,7 +42,7 @@ def build_lstm_2(etl: ETL, epochs=25, batch_size=32):
     model = Sequential()
     model.add(LSTM(64, activation='relu', return_sequences=True, input_shape=(etl.X_train.shape[1], etl.X_train.shape[2])))
     model.add(LSTM(64, activation='relu'))
-    # model.add(LSTM(16))
+    # model.add(Uni_LSTM(16))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(n_outputs))
 
@@ -58,7 +58,7 @@ def build_lstm_2(etl: ETL, epochs=25, batch_size=32):
 
 def build_lstm_3(etl: ETL, epochs=25, batch_size=48):
     """
-    Builds, compiles, and fits our LSTM baseline model.
+    Builds, compiles, and fits our Uni_LSTM baseline model.
     """
     n_timesteps, n_features, n_outputs = 5, 1, 5
     callbacks = [tf.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)]
@@ -68,9 +68,9 @@ def build_lstm_3(etl: ETL, epochs=25, batch_size=48):
     model.add(Dropout(0.1))
     model.add(LSTM(units=64))
     model.add(Dropout(0.1))
-    # model.add(LSTM(units=50, return_sequences=True))
+    # model.add(Uni_LSTM(units=50, return_sequences=True))
     # model.add(Dropout(0.2))
-    # model.add(LSTM(units=50))
+    # model.add(Uni_LSTM(units=50))
     # model.add(Dropout(0.2))
     model.add(Dense(50))
     model.add(Dense(n_outputs))
@@ -90,4 +90,4 @@ def build_lstm_3(etl: ETL, epochs=25, batch_size=48):
 # history = baseline[1]
 # baseline_preds = PredictAndForecast(baseline_model, data.train, data.test)
 # baseline_evals = Evaluate(data.test, baseline_preds.predictions)
-# plot_results(data.test, baseline_preds.predictions, data.df, title_suffix='LSTM')
+# plot_results(data.test, baseline_preds.predictions, data.df, title_suffix='Uni_LSTM')

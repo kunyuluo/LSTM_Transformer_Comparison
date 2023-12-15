@@ -23,8 +23,8 @@ predict_values = PredictAndForecast(model, data.test).get_predictions()
 # Evaluate the prediction
 # *************************************************************************
 evals = Evaluate(data.test, predict_values)
-print('LSTM Model\'s mape is: {}%'.format(round(evals.mape*100, 1)))
-print('LSTM Model\'s var ratio is: {}%'.format(round(evals.var_ratio*100, 1)))
+print('Uni_LSTM Model\'s mape is: {}%'.format(round(evals.mape*100, 1)))
+print('Uni_LSTM Model\'s var ratio is: {}%'.format(round(evals.var_ratio*100, 1)))
 
 # Visualize the results
 # *************************************************************************
